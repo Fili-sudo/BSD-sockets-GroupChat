@@ -18,22 +18,18 @@ int no_clients = 0;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; //blocam datele atunci cand un thread acceseaza o variabila comuna
 
 //trimitem mesaje la toti clientii serverului
-void sendToAll(char* msg, int curr_client)
+void sendToAll(char* msg)
 {
 	int i;
 	pthread_mutex_lock(&mutex);
 	
 	for (i=0;i<no_clients;i++) 
 	{
-		if (clients[i]!=curr_client)/* trimitem mesaje tuturor clientilor mai putin celui ce 
-                                         a trimis mesaj serverului pentru a evita afisarea mesajelor duplicate*/
-		{
-			if (send(clients[i],msg,strlen(msg),0) < 0) 
+		if (send(clients[i],msg,strlen(msg),0) < 0) 
 			{
 				perror("sending failure...");
 				continue;
 			}
-		}
 	}
 
 	pthread_mutex_unlock(&mutex);
@@ -64,9 +60,14 @@ void* recvMsg(void* socket)
         {
             p=strtok(buff,":");
             strcpy(user,p);
+			char welcome[60];
+			strcpy(welcome,p);
+			strcat(welcome," has entered the chat\n");
+			sendToAll(welcome);
         }
+		
 
-		sendToAll(msg, cl.sockno);
+		sendToAll(msg);
         free(msg);
 	}
 	
@@ -74,7 +75,7 @@ void* recvMsg(void* socket)
     /* odata ajunsi aici stim ca un client s-a deconectat. Scoatem clientul din vectorul de clienti
        si notificam restul clientilor */
     sprintf(buff, "%s left the chat\n", user);
-    sendToAll(buff, cl.sockno);
+    sendToAll(buff);
 
 	pthread_mutex_lock(&mutex);
 

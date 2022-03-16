@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 
 	server_addr.sin_family = AF_INET;																	
 	server_addr.sin_port = htons(portno);																
-	server_addr.sin_addr.s_addr = inet_addr("192.168.0.106");												
+	server_addr.sin_addr.s_addr = inet_addr("192.168.0.105");												
 	client_addr_size = sizeof(client_addr);
 
 	if (bind(server_socket, (struct sockaddr*) & server_addr, sizeof(server_addr)) != 0)
