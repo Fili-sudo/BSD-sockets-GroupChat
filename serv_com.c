@@ -45,30 +45,36 @@ void* recvMsg(void* socket)
 
 	
     user[0]='\0';
-	while ((msg_len = recv(cl.sockno, buff, 500, 0)) > 0) 
+	int how_long;
+	while ((read(cl.sockno, &how_long, sizeof(int))) == sizeof(int)) 
 	{
-        buff[msg_len] = '\0';
-        /* alocam dinamic mesajul primit de la un client ca sa il redirectionam
-           catre toti ceilalti clienti conectati la chat*/
-        if((msg=(char *)malloc(msg_len*sizeof(char)))==NULL){ 
-            perror("allocation error");
-            exit(EXIT_FAILURE);
-        }
-        strcpy(msg,buff);
+		//printf("%d\n", how_long);
+		if((msg_len = recv(cl.sockno, buff, how_long, 0)) > 0)
+		{
+			buff[msg_len] = '\0';
+        	/* alocam dinamic mesajul primit de la un client ca sa il redirectionam
+        	   catre toti ceilalti clienti conectati la chat*/
+        	if((msg=(char *)malloc(msg_len*sizeof(char)))==NULL){ 
+        	    perror("allocation error");
+        	    exit(EXIT_FAILURE);
+        	}
+        	strcpy(msg,buff);
 
-        if(strlen(user) == 0)
-        {
-            p=strtok(buff,":");
-            strcpy(user,p);
-			char welcome[60];
-			strcpy(welcome,p);
-			strcat(welcome," has entered the chat\n");
-			sendToAll(welcome);
-        }
-		
+        	if(strlen(user) == 0)
+        	{
+        	    p=strtok(buff," ");
+        	    strcpy(user,p); //
+				//char welcome[60];
+				//strcpy(welcome,p);
+				//strcat(welcome," has entered the chat\n");
+				//sendToAll(welcome);
+        	}
 
-		sendToAll(msg);
-        free(msg);
+
+			sendToAll(msg);
+        	free(msg);
+		}
+        
 	}
 	
     
@@ -85,6 +91,7 @@ void* recvMsg(void* socket)
 	{
 		if (clients[i] == cl.sockno) 
 		{ 
+			close(clients[i]);
             for (j=i;j<no_clients-1;j++)
 			{
 				clients[j]=clients[j+1];

@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-#include "/home/davidvid/ourChat/serv_com.c"
+#include "serv_com.c"
 
 
 int main(int argc, char* argv[])
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 
 	server_addr.sin_family = AF_INET;																	
 	server_addr.sin_port = htons(portno);																
-	server_addr.sin_addr.s_addr = inet_addr("192.168.0.105");												
+	server_addr.sin_addr.s_addr = inet_addr("192.168.0.101");												
 	client_addr_size = sizeof(client_addr);
 
 	if (bind(server_socket, (struct sockaddr*) & server_addr, sizeof(server_addr)) != 0)
@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 
 	while (1) 
 	{
-		if ((client_socket = accept(server_socket, (struct sockaddr*) & client_addr, &client_addr_size)) < 0)	// Accepts a connection request - blocking call.
+		if ((client_socket = accept(server_socket, (struct sockaddr*) & client_addr, &client_addr_size)) < 0)
 		{
 			perror("accept unsuccessful...");
 			exit(1);
